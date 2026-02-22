@@ -7,7 +7,7 @@ TOKEN = os.getenv("TOKEN")
 
 
 CANAL_PAINEL = 1474952840928821258
-CANAL_SUPERIORES = 1343398652777070706
+CANAL_SUPERIORES = 1474983585751629998
 CARGO_SUPERIOR = 1449998328334123208
 CARGO_AUTORIZADO_SOLICITAR = 1449998328334123208
 
@@ -116,7 +116,7 @@ class PainelAvaliacao(discord.ui.View):
         self.membro_id = membro_id
 
     @discord.ui.button(
-        label="Aprovar / Enviar Convite",
+        label="Enviar Convite",
         style=discord.ButtonStyle.success
     )
     async def aprovar(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -144,7 +144,7 @@ class PainelAvaliacao(discord.ui.View):
         )
 
     @discord.ui.button(
-        label="Recusar Solicitação",
+        label="Recusar Convite",
         style=discord.ButtonStyle.danger
     )
     async def recusar(self, interaction: discord.Interaction, button: discord.ui.Button):
