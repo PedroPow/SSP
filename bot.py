@@ -331,7 +331,7 @@ async def on_ready():
             "• Apenas nomes **REGISTRAVEIS**\n"
             "• Após a solicitação **AGUARDE**\n"
             "• Apenas maiores de 18 anos\n\n"
-            "Qualquer duvida chamar <#1343398653133590642>\n\n"
+            "Qualquer duvida chamar <#1473875232430227497>\n\n"
             "_Dignidade acima de tudo_\n\n"
             "_A Rota é reservada aos heróis_\n"
         ),
