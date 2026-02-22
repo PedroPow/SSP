@@ -1,6 +1,10 @@
 import discord
 from discord.ext import commands
 import time
+import os
+
+TOKEN = os.getenv("TOKEN")
+
 
 CANAL_PAINEL = 1474952840928821258
 CANAL_SUPERIORES = 1343398652777070706
