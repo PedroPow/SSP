@@ -203,12 +203,16 @@ class SelecionarMembroRemoverSSP(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=120)
 
-    @discord.ui.user_select(
-        placeholder="Selecione o membro para remover o cargo SEM SSP",
-        min_values=1,
-        max_values=1
-    )
-    async def selecionar(self, interaction: discord.Interaction, select: discord.ui.UserSelect):
+        select = discord.ui.UserSelect(
+            placeholder="Selecione o membro para remover o cargo SEM SSP",
+            min_values=1,
+            max_values=1
+        )
+
+        select.callback = self.callback_select
+        self.add_item(select)
+
+    async def callback_select(self, interaction: discord.Interaction):
 
         cargo_superior = interaction.guild.get_role(CARGO_SUPERIOR)
 
@@ -219,7 +223,7 @@ class SelecionarMembroRemoverSSP(discord.ui.View):
             )
             return
 
-        membro = interaction.guild.get_member(select.values[0].id)
+        membro = interaction.guild.get_member(interaction.data["values"][0])
         cargo_sem_ssp = interaction.guild.get_role(CARGO_SEM_SSP)
 
         if cargo_sem_ssp not in membro.roles:
@@ -267,7 +271,7 @@ class SelecionarMembroRemoverSSP(discord.ui.View):
         await canal_log.send(embed=embed_log)
 
         await interaction.response.send_message(
-            f"✅ Cargo **SEM SSP** removido de {membro.mention}.",
+            f"✅ Cargo removido de {membro.mention}.",
             ephemeral=True
         )
 
