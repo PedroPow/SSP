@@ -10,6 +10,7 @@ CANAL_PAINEL = 1474952840928821258
 CANAL_SUPERIORES = 1474983585751629998
 CARGO_SUPERIOR = 1449998328334123208
 CARGO_AUTORIZADO_SOLICITAR = 1449998328334123208
+CARGO_SEM_SSP = 1469536548579049622  # ID do cargo SEM SSP
 
 
 TEMPO_COOLDOWN = 150
@@ -198,9 +199,103 @@ class PainelAvaliacao(discord.ui.View):
         )
 
 
+class SelecionarMembroRemoverSSP(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=120)
+
+    @discord.ui.user_select(
+        placeholder="Selecione o membro para remover o cargo SEM SSP",
+        min_values=1,
+        max_values=1
+    )
+    async def selecionar(self, interaction: discord.Interaction, select: discord.ui.UserSelect):
+
+        cargo_superior = interaction.guild.get_role(CARGO_SUPERIOR)
+
+        if cargo_superior not in interaction.user.roles:
+            await interaction.response.send_message(
+                "❌ Apenas superiores podem usar isso.",
+                ephemeral=True
+            )
+            return
+
+        membro = interaction.guild.get_member(select.values[0].id)
+        cargo_sem_ssp = interaction.guild.get_role(CARGO_SEM_SSP)
+
+        if cargo_sem_ssp not in membro.roles:
+            await interaction.response.send_message(
+                "Esse membro não possui o cargo SEM SSP.",
+                ephemeral=True
+            )
+            return
+
+        await membro.remove_roles(cargo_sem_ssp)
+
+        canal_log = bot.get_channel(CANAL_SUPERIORES)
+
+        embed_log = discord.Embed(
+            title="Regularização SSP",
+            color=discord.Color.green()
+        )
+
+        embed_log.add_field(
+            name="Membro",
+            value=f"{membro.mention}\nID: `{membro.id}`",
+            inline=False
+        )
+
+        embed_log.add_field(
+            name="Regularizado por",
+            value=f"{interaction.user.mention}\nID: `{interaction.user.id}`",
+            inline=False
+        )
+
+        embed_log.add_field(
+            name="Ação",
+            value="Cargo **SEM SSP** removido",
+            inline=False
+        )
+
+        embed_log.add_field(
+            name="Horário",
+            value=f"<t:{int(time.time())}:F>",
+            inline=False
+        )
+
+        embed_log.set_footer(text="Sistema SSP")
+
+        await canal_log.send(embed=embed_log)
+
+        await interaction.response.send_message(
+            f"✅ Cargo **SEM SSP** removido de {membro.mention}.",
+            ephemeral=True
+        )
+
 class PainelROTA(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
+
+    @discord.ui.button(
+        label="Regularizar SSP",
+        style=discord.ButtonStyle.primary,
+        custom_id="botao_regularizar_ssp"
+    )
+    async def regularizar_ssp(self, interaction: discord.Interaction, button: discord.ui.Button):
+
+        cargo_superior = interaction.guild.get_role(CARGO_SUPERIOR)
+
+        if cargo_superior not in interaction.user.roles:
+            await interaction.response.send_message(
+                "❌ Apenas superiores podem usar esse botão.",
+                ephemeral=True
+            )
+            return
+
+        await interaction.response.send_message(
+            "Selecione o membro para remover o cargo **SEM SSP**:",
+            view=SelecionarMembroRemoverSSP(),
+            ephemeral=True
+        )        
 
     @discord.ui.button(
         label="Solicitar Convite",
